@@ -9,6 +9,14 @@ const configuration = () => ({
     host: process.env.DB_HOST,
     port: parseInt(process.env.DB_PORT, 10) || 5432,
   },
+  redis: {
+    host: process.env.REDIS_HOST,
+    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+  },
+  mailer: {
+    user: process.env.MAILER_USER,
+    password: process.env.MAILER_PASSWORD,
+  },
 });
 
 export type ConfigurationType = ReturnType<typeof configuration>;

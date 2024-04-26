@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { Ticket } from './ticket.entity';
-import { DeleteResult } from 'typeorm';
 import { TicketsRepository } from './tickets.repository';
 import { TicketsQueryRepository } from './tickets.query-repository';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -20,7 +19,7 @@ export class TicketsService {
     return this.ticketsRepository.create(dto);
   }
 
-  async remove(id: number): Promise<DeleteResult> {
+  async remove(id: number) {
     return this.ticketsRepository.remove(id);
   }
 }

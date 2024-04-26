@@ -6,5 +6,5 @@ export class CreateTicketDto {
   readonly event: string;
 
   @IsDateString({}, { message: 'Please provide event date' })
-  readonly date: Date;
+  readonly date: string;
 }

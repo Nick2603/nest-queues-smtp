@@ -22,6 +22,7 @@ export class UsersRepository {
 
       user.firstName = dto.firstName;
       user.lastName = dto.lastName;
+      user.email = dto.email;
 
       if (dto.isActive !== undefined) user.isActive = dto.isActive;
 
@@ -42,6 +43,8 @@ export class UsersRepository {
       if (dto.firstName) userToUpdate.firstName = dto.firstName;
 
       if (dto.lastName) userToUpdate.lastName = dto.lastName;
+
+      if (dto.email) userToUpdate.email = dto.email;
 
       if (dto.isActive !== undefined) userToUpdate.isActive = dto.isActive;
 

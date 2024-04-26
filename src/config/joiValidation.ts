@@ -11,6 +11,10 @@ export const validationSchema: ConfigModuleOptions['validationSchema'] =
     DB_PORT: Joi.number().port(),
     PGADMIN_DEFAULT_EMAIL: Joi.string().email(),
     PGADMIN_DEFAULT_PASSWORD: Joi.string(),
+    REDIS_HOST: Joi.string(),
+    REDIS_PORT: Joi.number().port(),
+    MAILER_USER: Joi.string().email(),
+    MAILER_PASSWORD: Joi.string(),
   });
 
 export const validationOptions: ConfigModuleOptions['validationOptions'] = {

@@ -14,6 +14,9 @@ export class User extends BaseEntity {
   @Column({ default: true, name: 'is_active' })
   isActive: boolean;
 
+  @Column()
+  email: string;
+
   @OneToMany(() => Ticket, (ticket) => ticket.holder, {
     onUpdate: 'CASCADE',
     onDelete: 'CASCADE',

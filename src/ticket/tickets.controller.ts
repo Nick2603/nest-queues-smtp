@@ -18,7 +18,6 @@ import { AssignTicketToUserDto } from './dto/assign-ticket-to-user.dto';
 import { UnassignTicketFromUserCommand } from 'src/cqrs/commands/tickets/unassign-ticket-from-user.command';
 import { UnassignTicketFromUserDto } from './dto/unassign-ticket-from-user.dto';
 import { Ticket } from './ticket.entity';
-import { DeleteResult } from 'typeorm';
 
 @Controller('tickets')
 export class TicketsController {
@@ -60,7 +59,7 @@ export class TicketsController {
       new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
     )
     id: number,
-  ): Promise<DeleteResult> {
+  ): Promise<void> {
     return this.ticketsService.remove(id);
   }
 

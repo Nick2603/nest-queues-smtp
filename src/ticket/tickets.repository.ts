@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Ticket } from './ticket.entity';
-import { DeleteResult, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { User } from 'src/user/user.entity';
 
@@ -25,9 +25,9 @@ export class TicketsRepository {
     }
   }
 
-  async remove(id: number): Promise<DeleteResult> {
+  async remove(id: number) {
     try {
-      return this.ticketsRepository.delete(id);
+      await this.ticketsRepository.delete(id);
     } catch (error) {
       throw new BadRequestException(error);
     }

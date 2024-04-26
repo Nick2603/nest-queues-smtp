@@ -10,18 +10,20 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { QueryBus } from '@nestjs/cqrs';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { GetUsersQuery } from 'src/cqrs/queries/users/get-users.query';
 import { User } from './user.entity';
+import { CreateUserCommand } from 'src/cqrs/commands/users/create-user.command';
 
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get()
@@ -47,8 +49,12 @@ export class UsersController {
   }
 
   @Post()
-  async createUser(@Body() createUserDto: CreateUserDto): Promise<User> {
-    return this.usersService.create(createUserDto);
+  async createUser(
+    @Body() { firstName, lastName, email, isActive }: CreateUserDto,
+  ): Promise<User> {
+    return this.commandBus.execute<CreateUserCommand, Promise<User>>(
+      new CreateUserCommand(firstName, lastName, email, isActive),
+    );
   }
 
   @Put(':id')

@@ -15,5 +15,5 @@ export class Ticket extends BaseEntity {
 
   @Index('ticket_date')
   @Column()
-  date: Date;
+  date: string;
 }

@@ -1,10 +1,11 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { TicketsQueryRepository } from 'src/ticket/tickets.query-repository';
 import { UsersQueryRepository } from 'src/user/users.query-repository';
 import { TicketsRepository } from 'src/ticket/tickets.repository';
 import { BadRequestException } from '@nestjs/common';
 import { Ticket } from 'src/ticket/ticket.entity';
 import { UnassignTicketFromUserCommand } from './unassign-ticket-from-user.command';
+import { TicketUnassignedFromUserEvent } from 'src/cqrs/events/tickets/ticket-unassigned-from-user.event';
 
 @CommandHandler(UnassignTicketFromUserCommand)
 export class UnassignTicketFromUserCommandHandler
@@ -14,6 +15,7 @@ export class UnassignTicketFromUserCommandHandler
     private readonly usersQueryRepository: UsersQueryRepository,
     private readonly ticketsQueryRepository: TicketsQueryRepository,
     private readonly ticketsRepository: TicketsRepository,
+    private readonly eventBus: EventBus,
   ) {}
 
   async execute({
@@ -28,9 +30,24 @@ export class UnassignTicketFromUserCommandHandler
 
     if (!ticket) throw new BadRequestException('Ticket not found');
 
-    if (!ticket.holder || ticket.holder.id !== user.id)
+    const ticketHolder = ticket.holder;
+
+    if (!ticketHolder || ticketHolder.id !== user.id)
       throw new BadRequestException('Invalid data');
 
-    return this.ticketsRepository.unassignTicketFromUser(ticket);
+    const unassignedTicket =
+      await this.ticketsRepository.unassignTicketFromUser(ticket);
+
+    this.eventBus.publish(
+      new TicketUnassignedFromUserEvent(
+        unassignedTicket.event,
+        ticketHolder.email,
+        ticketHolder.firstName,
+        ticketHolder.lastName,
+        unassignedTicket.date,
+      ),
+    );
+
+    return unassignedTicket;
   }
 }

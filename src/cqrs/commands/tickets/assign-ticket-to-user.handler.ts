@@ -1,10 +1,11 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { AssignTicketToUserCommand } from './assign-ticket-to-user.command';
 import { TicketsQueryRepository } from 'src/ticket/tickets.query-repository';
 import { UsersQueryRepository } from 'src/user/users.query-repository';
 import { TicketsRepository } from 'src/ticket/tickets.repository';
 import { BadRequestException } from '@nestjs/common';
 import { Ticket } from 'src/ticket/ticket.entity';
+import { TicketAssignedToUserEvent } from 'src/cqrs/events/tickets/ticket-assigned-to-user.event';
 
 @CommandHandler(AssignTicketToUserCommand)
 export class AssignTicketToUserCommandHandler
@@ -14,6 +15,7 @@ export class AssignTicketToUserCommandHandler
     private readonly usersQueryRepository: UsersQueryRepository,
     private readonly ticketsQueryRepository: TicketsQueryRepository,
     private readonly ticketsRepository: TicketsRepository,
+    private readonly eventBus: EventBus,
   ) {}
 
   async execute({
@@ -28,6 +30,21 @@ export class AssignTicketToUserCommandHandler
 
     if (!ticket) throw new BadRequestException('Ticket not found');
 
-    return this.ticketsRepository.assignTicketToUser(user, ticket);
+    const assignedTicket = await this.ticketsRepository.assignTicketToUser(
+      user,
+      ticket,
+    );
+
+    this.eventBus.publish(
+      new TicketAssignedToUserEvent(
+        assignedTicket.event,
+        user.email,
+        user.firstName,
+        user.lastName,
+        assignedTicket.date,
+      ),
+    );
+
+    return assignedTicket;
   }
 }
